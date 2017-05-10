@@ -61,8 +61,13 @@ let all =
           { suit ; value } :: l ))
 ;;
 
+let new_deck () =
+  let random_state = Random.State.make_self_init () in
+  List.permute ~random_state all 
+;;
+
 let () =
-  (* let card = {suit = Suit.Diamonds ; value = Value.of_int 2 } in *)
-  List.iter all ~f:(fun card -> 
+  let deck = new_deck () in
+  List.iter deck ~f:(fun card -> 
       print_endline (to_string card)
     )
