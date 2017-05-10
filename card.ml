@@ -1,3 +1,4 @@
+open Core.Std
 module Suit = struct
   type t =
   | Clubs
@@ -11,12 +12,20 @@ module Suit = struct
     | Hearts -> "H"
     | Spades -> "S"
   ;; 
+
+  let all =
+    [ Clubs
+    ; Diamonds
+    ; Hearts
+    ; Spades
+    ]
 end
 
 module Value : sig
   type t
   val of_int : int -> t 
   val to_string  : t   -> string
+    val all : t list
 
 end = struct
   type t = int
@@ -33,6 +42,8 @@ end = struct
     | 13 -> "K"
     | i  -> string_of_int i
   ;;
+
+  let all = List.range 1 14
 end
 
 type t =
@@ -44,6 +55,14 @@ let to_string t =
   (Suit.to_string t.suit) ^ (Value.to_string t.value)
 ;;
 
+let all =
+  List.fold Suit.all ~init:[] ~f:(fun l suit ->
+      List.fold Value.all ~init:l ~f:(fun l value ->
+          { suit ; value } :: l ))
+;;
+
 let () =
-  let card = {suit = Suit.Diamonds ; value = Value.of_int 2 } in
-  print_endline (to_string card)
+  (* let card = {suit = Suit.Diamonds ; value = Value.of_int 2 } in *)
+  List.iter all ~f:(fun card -> 
+      print_endline (to_string card)
+    )
