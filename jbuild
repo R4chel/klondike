@@ -1,6 +1,6 @@
 (jbuild_version 1)
 
 (executables
-  ((names (card))
+  ((names (game))
   (libraries (core))))
   

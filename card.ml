@@ -11,7 +11,7 @@ module Suit = struct
     | Diamonds -> "D"
     | Hearts -> "H"
     | Spades -> "S"
-  ;; 
+  ;;
 
   let all =
     [ Clubs
@@ -25,7 +25,7 @@ module Value : sig
   type t
   val of_int : int -> t 
   val to_string  : t   -> string
-    val all : t list
+  val all : t list
 
 end = struct
   type t = int
@@ -65,9 +65,3 @@ let new_deck () =
   let random_state = Random.State.make_self_init () in
   List.permute ~random_state all 
 ;;
-
-let () =
-  let deck = new_deck () in
-  List.iter deck ~f:(fun card -> 
-      print_endline (to_string card)
-    )
