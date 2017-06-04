@@ -2,7 +2,7 @@ open Core.Std
 type t =
   { deck        : Card.t List.t
   ; piles       : Pile.t List.t
-  ; foundations : (Suit.t * Pile.t) List.t
+  ; foundations : Foundations.t
   }
 
 let deal deck =   
@@ -18,10 +18,26 @@ let new_game () =
   let deck, piles = deal deck in
   { deck
   ; piles
-  ; foundations = []
+  ; foundations = Foundations.empty
   }
 
+let print_cards cards =
+  List.map cards ~f:Card.to_string
+  |> String.concat ~sep:" "
+  |> print_endline
+  |> print_newline
+;;
+
+let print t =
+  print_endline "Deck: ";
+  print_cards t.deck;
+  print_endline "Foundations: ";
+  Foundations.print t.foundations;
+;;
 
 let () =
   let game = new_game () in
-  List.iter game.deck ~f:(fun card -> print_endline (Card.to_string card))
+  (* List.iter game.deck ~f:(fun card -> print_endline (Card.to_string card)) *)
+  print game
+;;
+
