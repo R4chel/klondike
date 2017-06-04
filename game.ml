@@ -33,11 +33,16 @@ let print t =
   print_cards t.deck;
   print_endline "Foundations: ";
   Foundations.print t.foundations;
+  print_newline ();
+  print_endline "Piles";
+  List.iteri t.piles ~f:(fun i pile ->
+      print_string ("P" ^ (string_of_int i) ^ ": ");
+      Pile.print pile
+    );
 ;;
 
 let () =
   let game = new_game () in
-  (* List.iter game.deck ~f:(fun card -> print_endline (Card.to_string card)) *)
   print game
 ;;
 
