@@ -22,5 +22,9 @@ let playable_cards t =
           { Card.suit ; value }
         ))
 ;;
-let playable _t _card =
-  failwith "TODO"
+
+let playable t card =
+  List.exists (playable_cards t) ~f:(fun c ->
+      Suit.equals c.suit card.suit && Value.equals c.value card.value
+    )
+;;
