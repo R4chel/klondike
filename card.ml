@@ -1,38 +1,15 @@
 open Core.Std
-module Suit = struct
-  type t =
-  | Clubs
-  | Diamonds
-  | Hearts
-  | Spades
 
-  let to_string = function
-    | Clubs -> "C"
-    | Diamonds -> "D"
-    | Hearts -> "H"
-    | Spades -> "S"
-  ;;
-
-  let all =
-    [ Clubs
-    ; Diamonds
-    ; Hearts
-    ; Spades
-    ]
-end
-
-module Value : sig
-  type t
-  val of_int : int -> t 
-  val to_string  : t   -> string
-  val all : t list
-
-end = struct
+module Value = struct
   type t = int
 
-  let of_int i =
+  let of_int_exn i =
     assert (i >= 1 && i <= 13);
     i
+  ;;
+
+  let of_int i =
+    if (i >= 1 && i <= 13) then Some i else None
   ;;
 
   let to_string = function

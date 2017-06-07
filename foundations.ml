@@ -15,5 +15,12 @@ let print t =
     )
 ;;
 
+let playable_cards t =
+  List.filter_map t ~f:(fun (suit, cards) ->
+      let value = (List.length cards) + 1 in
+      Option.map (Card.Value.of_int value) ~f:(fun value ->
+          { Card.suit ; value }
+        ))
+;;
 let playable _t _card =
   failwith "TODO"
