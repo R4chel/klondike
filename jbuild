@@ -2,11 +2,12 @@
 
 (executables
   ((names (game))
-  (libraries (ppx_jane
-              ppx_deriving
-              ppx_sexp_conv
+  (libraries (core
+              ;; ppx_jane
+              ;; ppx_deriving
+              ;; ppx_sexp_conv
+              ;; ppx_driver
               sexplib
-              core
   ))
-  (preprocess (pps (ppx_sexp_conv ppx_deriving)))
+  (preprocess (pps (ppx_jane)))
 ))

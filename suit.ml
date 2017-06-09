@@ -1,13 +1,15 @@
 open Core.Std
 open Sexplib.Std
 
+type color = Red | Black
+
 module T = struct
   type t =
     | Clubs
     | Diamonds
     | Hearts
     | Spades
-  [@@deriving sexp]
+  [@@deriving compare, sexp]
   let hash = Hashtbl.hash
   let compare = compare
 end
@@ -35,3 +37,15 @@ let all =
   ; Spades
   ]
 ;;
+
+
+let color = function
+  | Hearts | Diamonds -> Red
+  | Clubs | Spades -> Black
+;;
+
+let opposite_colors s1 s2 =
+  color s1 <> color s2
+;;
+
+let equal s1 s2 = phys_equal s1 s2

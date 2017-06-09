@@ -8,3 +8,12 @@ let print t =
   |> String.concat ~sep:" "
   |> print_endline
 ;;
+
+let can_play (t : t) (card : Card.t) =
+  match t with
+  | [] -> Card.Value.equal (Card.Value.of_int_exn 13) card.value 
+  | hd :: tl ->
+    Card.Value.is_prev card.value hd.value
+    && Suit.opposite_colors hd.suit card.suit
+;;
+

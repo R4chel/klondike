@@ -20,6 +20,10 @@ module Value = struct
     | i  -> string_of_int i
   ;;
 
+  let equal = Int.equal
+
+  let is_prev v1 v2 = v1 = v2 - 1
+
   let all = List.range 1 14
 end
 
