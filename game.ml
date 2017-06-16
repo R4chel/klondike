@@ -1,6 +1,6 @@
 open Core.Std
 type t =
-  { deck        : Card.t List.t
+  { deck        : Deck.t
   ; piles       : Pile.t List.t
   ; foundations : Foundations.t
   }
@@ -16,7 +16,7 @@ let deal deck =
 let new_game () =
   let deck = Card.new_deck () in
   let deck, piles = deal deck in
-  { deck
+  { deck = Deck.of_cards deck
   ; piles
   ; foundations = Foundations.empty
   }
@@ -32,7 +32,7 @@ let move_to_foundations foundations pile =
       None
   | None -> None
 
-let play_all_playable t =
+let try_each_pile_once t =
   let foundations, piles = 
     List.fold t.piles ~init:(t.foundations, []) ~f:(fun (acum_foundations, acum_piles) pile ->
         match move_to_foundations acum_foundations pile with
@@ -43,10 +43,48 @@ let play_all_playable t =
   { t with piles ; foundations }
 ;;
 
-let turn (t : t) (action : Action.t) : t =
-  match action with
-  | Move_to_foundation _pile -> failwith "TODO"
-  | Play_all_playable -> play_all_playable t   
+let rec play_all_playable t =
+  print_endline "checking if playable..."; 
+  let initial_score = Foundations.score t.foundations in
+  let t = try_each_pile_once t in
+  if Foundations.score t.foundations > initial_score then
+    play_all_playable t
+  else
+    t
+;; 
+
+let try_add_card_to_piles piles (card : Card.t) =
+    List.fold piles ~init:(false, []) ~f:(fun (played, piles) pile ->
+        if not played && Pile.can_play pile card then
+          (true, (Pile.play pile card) :: piles)
+        else
+          (played, pile :: piles)
+      )
+;;
+
+let try_from_deck t =
+  match Deck.top_card t.deck with
+  | None -> t
+  | Some card ->
+    if Foundations.playable t.foundations card then
+      { t with
+        deck = Deck.remove_top_card_exn t.deck
+      ; foundations = Foundations.play_if_playable t.foundations card
+      }
+    else
+      begin
+        let played, piles = try_add_card_to_piles t.piles card in
+        if played then
+          { t with
+            deck = Deck.remove_top_card_exn t.deck
+          ; piles
+          }
+
+        else
+          { t with
+            deck = Deck.discard_top_card t.deck 
+          }
+      end
 ;;
 
 let print_cards cards =
@@ -63,7 +101,7 @@ let print t turn =
   Foundations.print t.foundations;
   print_newline ();
   print_endline "Deck: ";
-  print_cards t.deck;
+  Deck.print t.deck;
   print_endline "Piles";
   List.iteri t.piles ~f:(fun i pile ->
       print_string ("P" ^ (string_of_int i) ^ ": ");
@@ -71,9 +109,21 @@ let print t turn =
     );
 ;;
 
+let play t =
+  let t = play_all_playable t in
+  let t = try_from_deck t in
+  t
+;;
+
 let () =
   let game = new_game () in
   print game 0;
-  let game = turn game Action.Play_all_playable in
-  print game 1
+  let _game = 
+    List.fold (List.range 1 30) ~init:game ~f:(fun game i ->
+        let game = play game in
+        print game i;
+        game
+        )
+    in
+  print_newline ();
 ;;

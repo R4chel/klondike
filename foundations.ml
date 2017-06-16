@@ -41,4 +41,5 @@ let play_if_playable (t : t) (card : Card.t) =
 
 let score t =
   let count = List.fold t ~init:0 ~f:(fun sum (_suit, l) -> (List.length l) + sum) in
-  count * 5
+  count * 5 - 52
+;;

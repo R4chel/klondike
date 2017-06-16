@@ -8,7 +8,8 @@ let of_cards cards =
   match cards with
   | hd :: tl -> { top = [hd] ; hidden = tl }
   | [] -> { top = [] ; hidden = [] }
-    
+;;
+
 let print t = 
   List.map t.top ~f:Card.to_string
   |> String.concat ~sep:" "
@@ -27,6 +28,9 @@ let can_play (t : t) (card : Card.t) =
     Card.Value.is_prev card.value hd.value
     && Suit.opposite_colors hd.suit card.suit
 ;;
+
+let play (t : t) (card : Card.t) =
+  { t with top = card :: t.top }
 
 let top_card t = List.hd t.top
 let remove_top_card_exn t =

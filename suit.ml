@@ -38,7 +38,6 @@ let all =
   ]
 ;;
 
-
 let color = function
   | Hearts | Diamonds -> Red
   | Clubs | Spades -> Black
