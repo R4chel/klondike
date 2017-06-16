@@ -16,4 +16,3 @@ let can_play (t : t) (card : Card.t) =
     Card.Value.is_prev card.value hd.value
     && Suit.opposite_colors hd.suit card.suit
 ;;
-

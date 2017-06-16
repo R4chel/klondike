@@ -23,8 +23,9 @@ let playable_cards t =
         ))
 ;;
 
-let playable t card =
+let playable (t : t) (card: Card.t) =
   List.exists (playable_cards t) ~f:(fun c ->
-      Suit.equals c.suit card.suit && Value.equals c.value card.value
+      Suit.equal c.suit card.suit
+      && Card.Value.equal c.value card.value
     )
 ;;
