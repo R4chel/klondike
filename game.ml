@@ -21,6 +21,34 @@ let new_game () =
   ; foundations = Foundations.empty
   }
 
+let move_to_foundations foundations pile =
+  match Pile.top_card pile with
+  | Some card ->
+    if Foundations.playable foundations card then
+      let pile = Pile.remove_top_card_exn pile in
+      let foundations = Foundations.play_if_playable foundations card in
+      Some (foundations, pile)
+    else
+      None
+  | None -> None
+
+let play_all_playable t =
+  let foundations, piles = 
+    List.fold t.piles ~init:(t.foundations, []) ~f:(fun (acum_foundations, acum_piles) pile ->
+        match move_to_foundations acum_foundations pile with
+        | None -> (acum_foundations, pile :: acum_piles)
+        | Some (foundations, pile) -> (foundations, pile :: acum_piles)
+      )
+  in
+  { t with piles ; foundations }
+;;
+
+let turn (t : t) (action : Action.t) : t =
+  match action with
+  | Move_to_foundation _pile -> failwith "TODO"
+  | Play_all_playable -> play_all_playable t   
+;;
+
 let print_cards cards =
   List.map cards ~f:Card.to_string
   |> String.concat ~sep:" "
@@ -28,12 +56,14 @@ let print_cards cards =
   |> print_newline
 ;;
 
-let print t =
-  print_endline "Deck: ";
-  print_cards t.deck;
+let print t turn =
+  print_endline ("======================= Turn " ^ (string_of_int turn) ^ " ==========================");
+  print_endline ("Score: " ^ (string_of_int (Foundations.score t.foundations)));
   print_endline "Foundations: ";
   Foundations.print t.foundations;
   print_newline ();
+  print_endline "Deck: ";
+  print_cards t.deck;
   print_endline "Piles";
   List.iteri t.piles ~f:(fun i pile ->
       print_string ("P" ^ (string_of_int i) ^ ": ");
@@ -43,6 +73,7 @@ let print t =
 
 let () =
   let game = new_game () in
-  print game
+  print game 0;
+  let game = turn game Action.Play_all_playable in
+  print game 1
 ;;
-

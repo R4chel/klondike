@@ -21,9 +21,9 @@ module Value = struct
   ;;
 
   let equal = Int.equal
+  let equal_int = Int.equal
 
   let is_prev v1 v2 = v1 = v2 - 1
-
   let all = List.range 1 14
 end
 

@@ -29,3 +29,16 @@ let playable (t : t) (card: Card.t) =
       && Card.Value.equal c.value card.value
     )
 ;;
+
+let play_if_playable (t : t) (card : Card.t) =
+  List.map t ~f:(fun (suit, cards) ->
+    if Suit.equal card.suit suit
+    && Card.Value.equal_int card.value ((List.length cards) + 1)
+    then (suit, card :: cards)
+    else (suit, cards)
+    )
+;;
+
+let score t =
+  let count = List.fold t ~init:0 ~f:(fun sum (_suit, l) -> (List.length l) + sum) in
+  count * 5
