@@ -64,11 +64,13 @@ let try_add_card_to_piles piles (card : Card.t) =
 
 let try_from_deck t =
   match Deck.top_card t.deck with
-  | None -> t
+  | None ->
+    print_endline "empty discard";
+   { t with deck = Deck.empty_discard t.deck } 
   | Some card ->
     if Foundations.playable t.foundations card then
       { t with
-        deck = Deck.remove_top_card_exn t.deck
+        deck = Deck.remove_top_card t.deck
       ; foundations = Foundations.play_if_playable t.foundations card
       }
     else
@@ -76,7 +78,7 @@ let try_from_deck t =
         let played, piles = try_add_card_to_piles t.piles card in
         if played then
           { t with
-            deck = Deck.remove_top_card_exn t.deck
+            deck = Deck.remove_top_card t.deck
           ; piles
           }
 

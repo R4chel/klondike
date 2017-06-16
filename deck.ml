@@ -30,5 +30,19 @@ let top_card t = List.hd t.deck
 
 let of_cards deck = { deck ; discard = [] }
 
-let remove_top_card_exn t =
-  { t with deck = List.tl_exn t.deck }
+let remove_top_card t =
+  match t.deck with 
+  | [] ->
+    { deck = List.rev t.discard
+    ; discard = []
+    }
+  | hd :: tl ->
+    { t with  deck = tl}
+
+let empty_discard t =
+  match t.deck with
+  | [] ->
+    { deck = List.rev t.discard
+    ; discard = []
+    }
+  | hd :: tl -> t
