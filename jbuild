@@ -9,5 +9,5 @@
               ;; ppx_driver
               sexplib
   ))
-  (preprocess (pps (ppx_jane)))
+  ;; (preprocess (pps (ppx_jane)))
 ))

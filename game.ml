@@ -3,6 +3,7 @@ type t =
   { deck        : Deck.t
   ; piles       : Pile.t List.t
   ; foundations : Foundations.t
+  ; board       : Board.t list
   }
 
 let deal deck =   
@@ -19,6 +20,8 @@ let new_game () =
   { deck = Deck.of_cards deck
   ; piles
   ; foundations = Foundations.empty
+  ; board = []
+
   }
 
 let move_to_foundations foundations pile =
@@ -61,6 +64,13 @@ let try_add_card_to_piles piles (card : Card.t) =
           (played, pile :: piles)
       )
 ;;
+
+(* let move_between_piles t = *)
+(*   List.fold t.piles ~init:t.piles ~f:(fun piles pile1 -> *)
+(*       let card = Pile.top_card pile1 in *)
+(*       List.fold piles ~init:  *)
+
+(*     ) *)
 
 let try_from_deck t =
   match Deck.top_card t.deck with
