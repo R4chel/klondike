@@ -1,5 +1,5 @@
 open Core.Std
 
 type t =
-  | Move_to_foundation of Pile.t
-  | Play_all_playable 
+  | Pile_to_pile of Id.t * Id.t
+  | Multi_pile_to_pile of Id.t * Id.t * int
