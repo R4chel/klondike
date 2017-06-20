@@ -58,7 +58,7 @@ let () =
       (* let board = testing_board i in *)
         let board = new_board () in
       let board =
-      List.fold (List.range 0 10000) ~init:board ~f:(fun board _ ->
+      List.fold (List.range 0 5000) ~init:board ~f:(fun board _ ->
          turn board 
         )
       in
