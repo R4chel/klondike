@@ -12,7 +12,17 @@ let deal_board board =
     )
 ;;
 
-let new_board () = deal_board Board.new_board
+let deck i =
+  print_endline ("Random seed: " ^ string_of_int i);
+  Random.init i;
+  List.permute Card.all 
+;;
+
+let new_board () =
+  deal_board (Board.new_board ())
+
+let testing_board i =
+  deal_board (Board.new_board ~deck:(deck i) ())
 
 let get_action t =
   let moves = Board.valid_moves t in
@@ -20,23 +30,36 @@ let get_action t =
   List.nth_exn moves r
 ;;
 
-let () =
+let turn board =
+  let action = get_action board in
+  if Board.valid board action then
+    begin
+      let board = Board.apply_action board action in
+      Board.clean_piles board
+    end
+  else board
+
+let game =
   let board = new_board () in
   let board =
-    List.fold (List.range 0 100) ~init:board ~f:(fun board i ->
-        print_endline ("======================================== Turn " ^ string_of_int i ^ " ===================");
-      Board.print board;
-        print_newline ();
-
-      let action = get_action board in
-      if Board.valid board action then
-        begin
-          let board = Board.apply_action board action in
-          Board.clean_piles board
-        end
-      else board
+    List.fold (List.range 0 1000) ~init:board ~f:(fun board i ->
+      (*   print_endline ("======================================== Turn " ^ string_of_int i ^ " ==================="); *)
+      (* Board.print board; *)
+      (*   print_newline (); *)
+        turn board
     )
   in
   print_endline "END STATE";
   Board.print board
 
+let () =
+  List.iter (List.range 0 100) ~f:(fun i ->
+      let board = testing_board i in
+      let board =
+      List.fold (List.range 0 1000) ~init:board ~f:(fun board _ ->
+         turn board 
+        )
+      in
+  Board.print board;
+  print_endline ("Count: " ^ string_of_int (Board.score board))
+    )

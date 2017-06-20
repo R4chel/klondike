@@ -46,3 +46,7 @@ let new_deck () =
   let random_state = Random.State.make_self_init () in
   List.permute ~random_state all 
 ;;
+
+let testing_deck () =
+  Random.init 10;
+  List.permute all 

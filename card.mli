@@ -16,5 +16,7 @@ type t =
   ; value : Value.t
   }
 
-val new_deck : unit -> t list
+val all : t List.t
+val new_deck : unit -> t List.t
 val to_string : t -> string
+val testing_deck : unit -> t List.t

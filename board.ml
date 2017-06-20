@@ -2,12 +2,13 @@ open Core.Std
 
 type t = Card.t List.t Id.Map.t
 
-let new_board =
+let new_board ?deck () =
   let empty = List.fold Id.all ~init:Id.Map.empty ~f:(fun map id ->
      Map.add ~key:id ~data:[] map
     )
   in
-  Map.add empty ~key:Id.Deck ~data:(Card.new_deck ())
+  let deck = match deck with Some deck -> deck | None -> Card.new_deck () in
+  Map.add empty ~key:Id.Deck ~data:deck
 
 let print t =
   Map.iteri t ~f:(fun ~key ~data ->
@@ -144,3 +145,10 @@ let apply_action t (action : Action.t) =
     Map.add t ~key:Id.Deck ~data:(List.rev discard)
     |> Map.add ~key:Id.Discard ~data:[]
 ;;
+
+let score t =
+  Map.fold t ~init:0 ~f:(fun ~key ~data sum ->
+      match key with
+      | Id.Foundation _ -> List.length data + sum
+      | _ -> sum
+    )
