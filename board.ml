@@ -19,7 +19,6 @@ let print t =
     )
 ;;
 
-
 let pile_to_pile t id1 id2 =
   let p1 = Map.find_exn t id1 in
   let p2 = Map.find_exn t id2 in
@@ -54,7 +53,9 @@ let clean_piles t =
 
 let valid_pile_to_pile t (id1 : Id.t) (id2 : Id.t) =
   match id1, id2 with
-  | Deck, Discard -> true
+  | Deck, Discard ->
+    let deck = Map.find_exn t Id.Deck in
+    not (List.is_empty deck)
   | _ , (Deck | Discard | Hidden_pile _)
   | (Discard | Hidden_pile _ ), _ -> false
   | (Pile _ | Deck | Foundation _), Pile i -> 
@@ -79,8 +80,67 @@ let valid_pile_to_pile t (id1 : Id.t) (id2 : Id.t) =
     end
 ;;
     
+let valid_multi_pile_to_pile t (id1 : Id.t) (id2 : Id.t) n =
+  match id1, id2 with
+  | Pile i, Pile j ->
+    let (p1 : Card.t List.t) = Map.find_exn t id1 in
+    let (p2 : Card.t List.t) = Map.find_exn t id2 in
+    begin
+      match List.nth p1 n, p2 with
+      | Some card, dst :: _ ->
+        Card.Value.is_prev card.value dst.value
+        && Suit.opposite_colors dst.suit card.suit
+      | Some card, [] ->
+        Card.Value.equal (Card.Value.of_int_exn 13) card.value
+      | None , _ -> false
+    end
+  | _, _ -> false
+;;
+
 let valid t (action : Action.t) =
   match action with
-  | Pile_to_pile (id1, id2) -> valid_pile_to_pile t id1 id2
-  | Multi_pile_to_pile (id1, id2, n) -> failwith "TODO"
+  | Pile_to_pile (id1, id2) ->
+    valid_pile_to_pile t id1 id2
+  | Multi_pile_to_pile (id1, id2, n) ->
+    valid_multi_pile_to_pile t id1 id2 n
+  | Refresh_deck ->
+    let deck = Map.find_exn t Id.Deck in
+    List.is_empty deck
+;;
+
+let multi_moves t =
+  List.map Id.pile_ids ~f:(fun id ->
+      let pile = Map.find_exn t id in
+      List.map (List.range 2 (List.length pile)) ~f:(fun i -> (id, i))
+    )
+  |> List.concat_no_order
+  |> List.cartesian_product Id.pile_ids
+  |> List.map ~f:(fun (id2, (id1, n)) -> Action.Multi_pile_to_pile (id1, id2, n))
+;;
+
+let valid_moves t =
+  let sources = Id.Deck :: Id.pile_ids in
+  let dests = Id.pile_ids @ Id.foundation_ids in
+  let all_possible_moves =
+    (Id.Deck, Id.Discard) :: List.cartesian_product sources dests
+  in
+  let actions =
+    Action.Refresh_deck
+    :: List.map all_possible_moves ~f:(fun (p1, p2) -> Action.Pile_to_pile (p1, p2))
+    @ multi_moves t
+
+  in
+  List.filter actions ~f:(valid t)
+;;
+
+let apply_action t (action : Action.t) =
+  match action with
+  | Pile_to_pile (p1, p2) ->
+    pile_to_pile t p1 p2
+  | Multi_pile_to_pile (p1, p2, n) ->
+    multi_pile_to_pile t p1 p2 n
+  | Refresh_deck ->
+    let discard = Map.find_exn t Id.Discard in
+    Map.add t ~key:Id.Deck ~data:(List.rev discard)
+    |> Map.add ~key:Id.Discard ~data:[]
 ;;
