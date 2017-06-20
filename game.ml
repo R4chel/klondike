@@ -20,17 +20,13 @@ let deck i =
 
 let new_board () =
   deal_board (Board.new_board ())
+;;
 
 let testing_board i =
   deal_board (Board.new_board ~deck:(deck i) ())
-
-let action_random_state = Random.State.make_self_init ()
-
-let get_action t =
-  let moves = Board.valid_moves t in
-  let r = Random.State.int action_random_state (List.length moves) in
-  List.nth_exn moves r
 ;;
+
+let get_action t = Player.get_action t
 
 let turn board =
   let action = get_action board in
@@ -62,7 +58,7 @@ let () =
       (* let board = testing_board i in *)
         let board = new_board () in
       let board =
-      List.fold (List.range 0 5000) ~init:board ~f:(fun board _ ->
+      List.fold (List.range 0 10000) ~init:board ~f:(fun board _ ->
          turn board 
         )
       in
