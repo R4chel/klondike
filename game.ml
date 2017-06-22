@@ -56,14 +56,16 @@ let () =
     List.fold (List.range 0 num_games) ~init:0 ~f:(fun sum i ->
         print_int i; print_newline ();
       (* let board = testing_board i in *)
-        let board = new_board () in
+      let board = new_board () in
       let board =
       List.fold (List.range 0 5000) ~init:board ~f:(fun board _ ->
          turn board 
         )
       in
-      if Int.equal (Board.score board) 52 then print_endline ("win!");
-      sum + (Board.score board)
+      let score = Board.score board in 
+      if Int.equal score 52 then print_endline ("win!");
+  print_endline ("SCORE " ^ string_of_int score);
+      sum + score
     )
   in
   print_endline ("SCORE " ^ string_of_int wins);
