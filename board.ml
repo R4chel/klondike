@@ -3,10 +3,11 @@ open Core
 module T = struct
   type t =
     Card.t List.t Id.Map.t
-  [@@deriving sexp]
+  [@@deriving sexp, compare]
+  let hash = Hashtbl.hash
 end
 include T
-
+include Hashable.Make (T)
 
 let new_board ?deck () =
   let empty = List.fold Id.all ~init:Id.Map.empty ~f:(fun map id ->

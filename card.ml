@@ -31,7 +31,7 @@ type t =
   { suit  : Suit.t
   ; value : Value.t
   }
-  [@@deriving sexp]
+  [@@deriving sexp, compare]
 
 let to_string t =
   (Suit.to_string t.suit) ^ (Value.to_string t.value)
