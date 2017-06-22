@@ -1,5 +1,8 @@
 open Core.Std
-type t = Board.t
+type t =
+  { board : Board.t
+  ; past_actions : Action.t List.t
+  }
 
 let deal_board board =
   List.fold Id.all ~init:board ~f:(fun board pile_id ->
@@ -25,30 +28,20 @@ let new_board () =
 let testing_board i =
   deal_board (Board.new_board ~deck:(deck i) ())
 ;;
-
+ 
 let get_action t = Player.get_action t
 
-let turn board =
-  let action = get_action board in
-  if Board.valid board action then
+let turn (game : t) =
+  let action = get_action game.board in
+  if Board.valid game.board action then
     begin
-      let board = Board.apply_action board action in
-      Board.clean_piles board
+      let board =
+        Board.apply_action game.board action 
+        |> Board.clean_piles 
+      in
+      { board ; past_actions = action :: game.past_actions }
     end
-  else board
-
-(* let game = *)
-(*   let board = new_board () in *)
-(*   let board = *)
-(*     List.fold (List.range 0 1000) ~init:board ~f:(fun board i -> *)
-(*       (\*   print_endline ("======================================== Turn " ^ string_of_int i ^ " ==================="); *\) *)
-(*       (\* Board.print board; *\) *)
-(*       (\*   print_newline (); *\) *)
-(*         turn board *)
-(*     ) *)
-(*   in *)
-(*   print_endline "END STATE"; *)
-(*   Board.print board *)
+  else game
 
 let () =
   let num_games = 100 in
@@ -57,14 +50,15 @@ let () =
         print_int i; print_newline ();
       (* let board = testing_board i in *)
       let board = new_board () in
-      let board =
-      List.fold (List.range 0 5000) ~init:board ~f:(fun board _ ->
-         turn board 
+      let game = { board ; past_actions = [] } in
+      let game =
+      List.fold (List.range 0 5000) ~init:game ~f:(fun game _ ->
+         turn game 
         )
       in
-      let score = Board.score board in 
+      let score = Board.score game.board in
       if Int.equal score 52 then print_endline ("win!");
-  print_endline ("SCORE " ^ string_of_int score);
+      print_endline ("SCORE " ^ string_of_int score);
       sum + score
     )
   in
@@ -72,5 +66,3 @@ let () =
   let win_percent = Int.(//) wins num_games in
   print_endline ("SCORE " ^ string_of_float win_percent);
 ;;
-
-
