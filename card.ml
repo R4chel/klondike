@@ -1,7 +1,7 @@
 open Core
 
 module Value = struct
-  type t = int 
+  type t = int [@@deriving compare, sexp]
 
   let of_int_exn i =
     assert (i >= 1 && i <= 13);
@@ -28,9 +28,10 @@ module Value = struct
 end
 
 type t =
-  { suit : Suit.t
+  { suit  : Suit.t
   ; value : Value.t
   }
+  [@@deriving sexp]
 
 let to_string t =
   (Suit.to_string t.suit) ^ (Value.to_string t.value)

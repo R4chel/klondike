@@ -14,7 +14,7 @@ module T = struct
 end
 
 include T
-(* include Hashable.Make (T) *)
+include Hashable.Make (T)
 let to_full_string = function
   | Clubs    -> "Clubs"
   | Diamonds -> "Diamonds"

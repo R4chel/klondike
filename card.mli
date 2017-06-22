@@ -15,6 +15,7 @@ type t =
   { suit  : Suit.t
   ; value : Value.t
   }
+  [@@deriving sexp]
 
 val all : t List.t
 val new_deck : unit -> t List.t

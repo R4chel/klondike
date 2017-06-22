@@ -4,9 +4,10 @@
   ((names (game))
   (libraries (core
               ppx_jane
-              ;; ppx_deriving
-              ;; ppx_sexp_conv
+              ppx_deriving
+              ppx_sexp_conv
               ;; ppx_driver
               sexplib
   ))
-))
+  (preprocess (pps (ppx_jane ppx_driver.runner)))
+)) 
