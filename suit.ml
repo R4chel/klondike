@@ -1,5 +1,4 @@
-open Core.Std
-open Sexplib.Std
+open Core
 
 type color = Red | Black
 
@@ -9,7 +8,7 @@ module T = struct
     | Diamonds
     | Hearts
     | Spades
-  [@@deriving compare, sexp]
+  [@@deriving sexp]
   let hash = Hashtbl.hash
   let compare = compare
 end

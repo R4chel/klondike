@@ -1,7 +1,7 @@
-open Core.Std
+open Core
 
 module Value = struct
-  type t = int
+  type t = int 
 
   let of_int_exn i =
     assert (i >= 1 && i <= 13);

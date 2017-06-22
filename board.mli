@@ -1,4 +1,4 @@
-open Core.Std
+open Core
 
 type t = Card.t List.t Id.Map.t
 

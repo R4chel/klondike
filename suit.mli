@@ -1,4 +1,4 @@
-open Core.Std
+open Core
 type t [@@deriving sexp, compare]
 
 val all : t list

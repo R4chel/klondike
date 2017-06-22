@@ -1,4 +1,4 @@
-open Core.Std
+open Core
 type t =
   { board : Board.t
   ; consecutive_discards : int
@@ -34,7 +34,7 @@ let get_action t = Player.get_action t
 let end_game (game : t) =
   Board.score game.board = 52
   || game.consecutive_discards > 200
-
+;;
 
 let turn (game : t) =
   let action = get_action game.board in
@@ -51,12 +51,14 @@ let turn (game : t) =
         { board ; consecutive_discards = 0 }
     end
   else game
+;;
 
 let () =
   let num_games = 1000 in
   let sum_score =
     List.fold (List.range 0 num_games) ~init:0 ~f:(fun sum i ->
-        print_int i; print_newline ();
+        Out_channel.output_string stdout (string_of_int i);
+        Out_channel.newline stdout;
       (* let board = testing_board i in *)
       let board = new_board () in
       let game = { board ; consecutive_discards = 0 } in

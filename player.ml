@@ -1,4 +1,4 @@
-open Core.Std
+open Core
 
 let action_random_state = Random.State.make_self_init ()
 

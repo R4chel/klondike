@@ -1,4 +1,4 @@
-open Core.Std
+open Core
 
 module Value : sig
   type t [@@deriving compare]

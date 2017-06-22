@@ -1,4 +1,4 @@
-open Core.Std
+open Core
 
 type t =
   | Pile_to_pile of Id.t * Id.t

@@ -1,6 +1,12 @@
-open Core.Std
+open Core
 
-type t = Card.t List.t Id.Map.t
+module T = struct
+  type t =
+    Card.t List.t Id.Map.t
+  [@@deriving sexp]
+end
+include T
+
 
 let new_board ?deck () =
   let empty = List.fold Id.all ~init:Id.Map.empty ~f:(fun map id ->
