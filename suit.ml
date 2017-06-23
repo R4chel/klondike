@@ -23,10 +23,10 @@ let to_full_string = function
 ;;
 
 let to_string = function
-  | Clubs    -> "C"
-  | Diamonds -> "D"
-  | Hearts   -> "H"
-  | Spades   -> "S"
+  | Clubs    -> ">3"
+  | Diamonds -> "<>"
+  | Hearts   -> "<3"
+  | Spades   -> ">D"
 ;;
 
 let all =
