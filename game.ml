@@ -36,12 +36,14 @@ let get_action t = Player.get_action t
 let end_game (game : t) =
   Board.score game.board = 52
   || game.consecutive_discards > 200
+  || Set.mem game.states game.board
 ;;
 
 let turn (game : t) =
   let action = get_action game.board in
   if not (end_game game) && Board.valid game.board action then
     begin
+      let states = Board.Set.add game.states game.board in
       let board =
         Board.apply_action game.board action 
         |> Board.clean_piles 
@@ -50,19 +52,19 @@ let turn (game : t) =
       | Action.Refresh_deck | Pile_to_pile (Id.Deck, Id.Discard) ->
         { board
         ; consecutive_discards = game.consecutive_discards + 1
-        ; states = Set.add game.states board
+        ; states
         }
       | _ ->
         { board
         ; consecutive_discards = 0
-        ; states = Set.add game.states board
+        ; states
         }
     end
   else game
 ;;
 
 let () =
-  let num_games = 1000 in
+  let num_games = 2 in
   let sum_score =
     List.fold (List.range 0 num_games) ~init:0 ~f:(fun sum i ->
         Out_channel.output_string stdout (string_of_int i);
@@ -76,7 +78,7 @@ let () =
         }
       in
       let game =
-      List.fold (List.range 0 5000) ~init:game ~f:(fun game _ ->
+      List.fold (List.range 0 500) ~init:game ~f:(fun game _ ->
          turn game 
         )
       in
