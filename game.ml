@@ -63,13 +63,29 @@ let turn (game : t) =
   else game
 ;;
 
+let rec play_game counter game =
+  if end_game game then
+    begin
+        Out_channel.output_string stdout ("Number of turns: " ^ string_of_int counter);
+        Out_channel.newline stdout;
+        Out_channel.output_string stdout ("Score: " ^ string_of_int (Board.score game.board));
+        Out_channel.newline stdout;
+    game
+  end
+  else
+    begin
+    turn game
+    |> play_game (counter + 1)
+  end
+
+;;
+
 let () =
-  let num_games = 2 in
+  let num_games = 10 in
   let sum_score =
     List.fold (List.range 0 num_games) ~init:0 ~f:(fun sum i ->
         Out_channel.output_string stdout (string_of_int i);
         Out_channel.newline stdout;
-      (* let board = testing_board i in *)
       let board = new_board () in
       let game =
         { board
@@ -77,11 +93,7 @@ let () =
         ; states = Board.Set.empty
         }
       in
-      let game =
-      List.fold (List.range 0 500) ~init:game ~f:(fun game _ ->
-         turn game 
-        )
-      in
+      let game = play_game 0 game in
       let score = Board.score game.board in
       if Int.equal score 52 then print_endline ("win!");
       (* print_endline ("SCORE " ^ string_of_int score); *)

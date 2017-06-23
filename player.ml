@@ -11,9 +11,9 @@ let get_action t =
       | Action.Pile_to_pile (Id.Deck, Id.Discard) ->
         multiply action 1
       | Action.Pile_to_pile (_, Id.Foundation _) ->
-        multiply action 10
+        multiply action 100
       | _ ->
-        multiply action 2
+        multiply action 75
       )
   |> List.concat
   in
