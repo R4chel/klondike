@@ -26,12 +26,15 @@ module Value = struct
   let is_prev v1 v2 = v1 = v2 - 1
   let all = List.range 1 14
 end
-
-type t =
-  { suit  : Suit.t
-  ; value : Value.t
-  }
+module T = struct
+  type t =
+    { suit  : Suit.t
+    ; value : Value.t
+    }
   [@@deriving sexp, compare]
+end
+include T
+include Comparable.Make(T)
 
 let to_string t =
   (Suit.to_string t.suit) ^ (Value.to_string t.value)

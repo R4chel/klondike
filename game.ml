@@ -1,7 +1,9 @@
 open Core
+
 type t =
   { board : Board.t
   ; consecutive_discards : int
+  ; states : Board.Set.t
   }
 
 let deal_board board =
@@ -46,9 +48,15 @@ let turn (game : t) =
       in
       match action with
       | Action.Refresh_deck | Pile_to_pile (Id.Deck, Id.Discard) ->
-        { board ; consecutive_discards = game.consecutive_discards + 1 }
+        { board
+        ; consecutive_discards = game.consecutive_discards + 1
+        ; states = Set.add game.states board
+        }
       | _ ->
-        { board ; consecutive_discards = 0 }
+        { board
+        ; consecutive_discards = 0
+        ; states = Set.add game.states board
+        }
     end
   else game
 ;;
@@ -61,7 +69,12 @@ let () =
         Out_channel.newline stdout;
       (* let board = testing_board i in *)
       let board = new_board () in
-      let game = { board ; consecutive_discards = 0 } in
+      let game =
+        { board
+        ; consecutive_discards = 0
+        ; states = Board.Set.empty
+        }
+      in
       let game =
       List.fold (List.range 0 5000) ~init:game ~f:(fun game _ ->
          turn game 

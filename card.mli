@@ -16,6 +16,7 @@ type t =
   ; value : Value.t
   }
   [@@deriving compare, sexp]
+include Comparable.S with type t := t
 
 val all : t List.t
 val new_deck : unit -> t List.t

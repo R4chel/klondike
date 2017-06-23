@@ -1,6 +1,8 @@
 open Core
 
-type t = Card.t List.t Id.Map.t
+type t = Card.t List.t Id.Map.t [@@deriving compare, sexp]
+include Hashable.S with type t := t
+include Comparable.S with type t := t
 
 val new_board : ?deck : Card.t List.t -> unit -> t
 val print : t -> unit

@@ -20,9 +20,12 @@ module T = struct
 
   let t_of_sexp _sexp = Deck
   let compare = compare
+  let hash = Hashtbl.hash
+
 end
 include T
 include Comparable.Make(T)
+include Hashable.Make (T)
 
 let pile_ids = List.map (List.range 0 7) ~f:(fun i -> Pile i)
 let hidden_pile_ids = List.map (List.range 0 7) ~f:(fun i -> Hidden_pile i)
