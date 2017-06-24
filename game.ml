@@ -46,7 +46,6 @@ let turn (game : t) =
       let states = Board.Set.add game.states game.board in
       let board =
         Board.apply_action game.board action 
-        |> Board.clean_piles 
       in
       match action with
       | Action.Refresh_deck | Pile_to_pile (Id.Deck, Id.Discard) ->

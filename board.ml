@@ -48,18 +48,22 @@ let multi_pile_to_pile t id1 id2 n =
   |>Id.Map.add ~key:id2 ~data:(cards @ p2)
 ;;
 
+let clean_pile t (id : Id.t) =
+  match id with
+  | Pile i -> 
+    let pile = Id.Map.find_exn t (Id.Pile i) in
+    let hidden_pile = Id.Map.find_exn t (Id.Hidden_pile i) in
+    begin match pile, hidden_pile with
+      | [], _ :: _ ->
+        pile_to_pile t (Id.Hidden_pile i) (Id.Pile i)
+      | _ -> t
+    end
+  | _ -> t
+;;
+
 let clean_piles t =
   List.fold Id.pile_ids ~init:t ~f:(fun t pile_id ->
-    match pile_id with
-    | Pile i -> 
-      let pile = Id.Map.find_exn t (Id.Pile i) in
-      let hidden_pile = Id.Map.find_exn t (Id.Hidden_pile i) in
-      begin match pile, hidden_pile with
-        | [], _ :: _ ->
-          pile_to_pile t (Id.Hidden_pile i) (Id.Pile i)
-        | _ -> t
-      end
-    | _ -> t
+      clean_pile t pile_id
   )
 ;;
 
@@ -148,18 +152,21 @@ let valid_moves t =
 let apply_action t (action : Action.t) =
   match action with
   | Pile_to_pile (p1, p2) ->
-    pile_to_pile t p1 p2
+    let t = pile_to_pile t p1 p2 in
+    clean_pile t p1
   | Multi_pile_to_pile (p1, p2, n) ->
-    multi_pile_to_pile t p1 p2 n
+    let t = multi_pile_to_pile t p1 p2 n in
+    clean_pile t p1
   | Refresh_deck ->
     let discard =Id.Map.find_exn t Id.Discard in
-   Id.Map.add t ~key:Id.Deck ~data:(List.rev discard)
+    Id.Map.add t ~key:Id.Deck ~data:(List.rev discard)
     |>Id.Map.add ~key:Id.Discard ~data:[]
 ;;
 
 let score t =
  Id.Map.fold t ~init:0 ~f:(fun ~key ~data sum ->
-      match key with
-      | Id.Foundation _ -> List.length data + sum
-      | _ -> sum
-    )
+    match key with
+    | Id.Foundation _ -> List.length data + sum
+    | _ -> sum
+  )
+;;
