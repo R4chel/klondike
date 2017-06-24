@@ -3,7 +3,7 @@ open Core
 type t =
   { board : Board.t
   ; states : Board.Set.t
-  ; past_actions : Action.t List.t
+  ; end_game : bool
   }
 
 let deal_board board =
@@ -36,32 +36,33 @@ let get_action (t : t) = Player.get_action t.board t.states
 let end_game (game : t) =
   Board.score game.board = 52
   || Set.mem game.states game.board
-  || List.exists game.past_actions ~f:Action.is_end_game
+  || game.end_game
 ;;
 
 let turn (game : t) =
   let action = get_action game in
-  if not (end_game game) && Board.valid game.board action then
+  if Board.valid game.board action then
     begin
       let states = Board.Set.add game.states game.board in
       let board =
         Board.apply_action game.board action 
       in
         { board
-        ; past_actions = action :: game.past_actions
+        ; end_game = Action.is_end_game action || game.end_game
         ; states
         }
     end
-  else game
+  else
+    failwith "Invalid action"
 ;;
 
 let rec play_game counter game =
   if end_game game then
     begin
-        Out_channel.output_string stdout ("Number of turns: " ^ string_of_int counter);
-        Out_channel.newline stdout;
-        Out_channel.output_string stdout ("Score: " ^ string_of_int (Board.score game.board));
-        Out_channel.newline stdout;
+      Out_channel.output_string stdout ("Number of turns: " ^ string_of_int counter);
+      Out_channel.newline stdout;
+      Out_channel.output_string stdout ("Score: " ^ string_of_int (Board.score game.board));
+      Out_channel.newline stdout;
     game
   end
   else
@@ -83,7 +84,7 @@ let () =
       let game =
         { board
         ; states = Board.Set.empty
-        ; past_actions = []
+        ; end_game = false
         }
       in
       let game = play_game 0 game in
