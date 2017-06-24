@@ -73,11 +73,12 @@ let rec play_game counter game =
 ;;
 
 let () =
-  let num_games = 10 in
+  let num_games = 100 in
   let sum_score =
     List.fold (List.range 0 num_games) ~init:0 ~f:(fun sum i ->
-        Out_channel.output_string stdout (string_of_int i);
-        Out_channel.newline stdout;
+      Out_channel.output_string stdout (string_of_int i);
+      Out_channel.newline stdout;
+      Out_channel.flush stdout; 
       let board = new_board () in
       let game =
         { board
