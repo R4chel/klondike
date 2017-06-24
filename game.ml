@@ -2,19 +2,19 @@ open Core
 
 type t =
   { board : Board.t
-  ; consecutive_discards : int
   ; states : Board.Set.t
+  ; past_actions : Action.t List.t
   }
 
 let deal_board board =
   List.fold Id.all ~init:board ~f:(fun board pile_id ->
-      match pile_id with
-      | Pile _i ->
-        Board.apply_action board (Action.Pile_to_pile (Id.Deck, pile_id))
-      | Hidden_pile i ->
-        Board.apply_action board (Action.Multi_pile_to_pile (Id.Deck, pile_id, i))
-      | Deck | Discard | Foundation _ -> board
-    )
+    match pile_id with
+    | Pile _i ->
+      Board.apply_action board (Action.Pile_to_pile (Id.Deck, pile_id))
+    | Hidden_pile i ->
+      Board.apply_action board (Action.Multi_pile_to_pile (Id.Deck, pile_id, i))
+    | Deck | Discard | Foundation _ -> board
+  )
 ;;
 
 let deck i =
@@ -31,31 +31,24 @@ let testing_board i =
   deal_board (Board.new_board ~deck:(deck i) ())
 ;;
  
-let get_action t = Player.get_action t
+let get_action (t : t) = Player.get_action t.board t.states
 
 let end_game (game : t) =
   Board.score game.board = 52
-  || game.consecutive_discards > 200
   || Set.mem game.states game.board
+  || List.exists game.past_actions ~f:Action.is_end_game
 ;;
 
 let turn (game : t) =
-  let action = get_action game.board in
+  let action = get_action game in
   if not (end_game game) && Board.valid game.board action then
     begin
       let states = Board.Set.add game.states game.board in
       let board =
         Board.apply_action game.board action 
       in
-      match action with
-      | Action.Refresh_deck | Pile_to_pile (Id.Deck, Id.Discard) ->
         { board
-        ; consecutive_discards = game.consecutive_discards + 1
-        ; states
-        }
-      | _ ->
-        { board
-        ; consecutive_discards = 0
+        ; past_actions = action :: game.past_actions
         ; states
         }
     end
@@ -88,8 +81,8 @@ let () =
       let board = new_board () in
       let game =
         { board
-        ; consecutive_discards = 0
         ; states = Board.Set.empty
+        ; past_actions = []
         }
       in
       let game = play_game 0 game in

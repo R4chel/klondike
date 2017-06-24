@@ -2,8 +2,8 @@ open Core
 
 let action_random_state = Random.State.make_self_init ()
 
-let get_action t =
-  let moves = Board.valid_moves t in
+let get_action t ts =
+  let moves = Board.valid_non_cyclic_moves t ts in
   (* Out_channel.output_string stdout (" valid moves: " ^ string_of_int (List.length moves)); *)
   let multiply action n = List.map (List.range 0 n) ~f:(fun _ -> action) in
   let weighted_moves =

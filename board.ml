@@ -122,6 +122,7 @@ let valid t (action : Action.t) =
   | Refresh_deck ->
     let deck =Id.Map.find_exn t Id.Deck in
     List.is_empty deck
+  | End_game -> true
 ;;
 
 let multi_moves t =
@@ -161,6 +162,19 @@ let apply_action t (action : Action.t) =
     let discard =Id.Map.find_exn t Id.Discard in
     Id.Map.add t ~key:Id.Deck ~data:(List.rev discard)
     |>Id.Map.add ~key:Id.Discard ~data:[]
+  | End_game -> t 
+;;
+
+let valid_non_cyclic_moves t ts =
+  let moves =
+    List.filter (valid_moves t) ~f:(fun action ->
+      let t = apply_action t action in
+      not (Set.mem ts t)
+    )
+  in
+  match moves with
+  | [] -> [ Action.End_game ]
+  | _ :: _ -> moves 
 ;;
 
 let score t =
